@@ -1,3 +1,25 @@
+LaptopBattery
+-------------
+
+This small tiny program takes a battery file input from *nix systems and produces a nice visual
+representation on the commandline. Often the users of laptops have some gimmicks in their status bar
+or task bar showning them that, this is though for simple powerusers annoying who like totally plain
+systems. Or maybe you just want the information in a nice format for your screen status line etc.
+
+Requirements
+------------
+
+  o Ruby
 
 
-(C) 2009, Bjoern Rennhak, under an MIT licence. http://www.opensource.org/licenses/mit-license.php
+
+
+Copyright
+---------
+
+(C) 2009, Bjoern Rennhak, under a triple license
+
+                o MIT licence. http://www.opensource.org/licenses/mit-license.php
+                o GPLv2 license
+                o BSD license
+
