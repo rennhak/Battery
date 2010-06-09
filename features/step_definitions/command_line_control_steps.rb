@@ -22,8 +22,8 @@ end
 
 
 # Scenario 2
-Given /^I provide the '\-d' or '\-\-design' switch as a command line argument$/ do
-  @arguments      = [ "-d", "--design" ]
+Given /^I provide the '\-d' or '\-\-design' switch as a command line argument \(with \-vr for value and raw\)$/ do
+  @arguments      = [ "-d -vr", "--design -vr" ]
   @values       ||= []
 end
 
@@ -38,8 +38,8 @@ Then /^I should see as a return value an integer number representing the full de
 end
 
 # Scenario 3
-Given /^I provide the '\-f' or '\-\-full' switch as a command line argument$/ do
-  @arguments      = [ "-f", "--full" ]
+Given /^I provide the '\-f' or '\-\-full' switch as a command line argument \(with \-vr for value and raw\)$/ do
+  @arguments      = [ "-f -vr", "--full -vr" ]
   @values       ||= []
 end
 
@@ -54,8 +54,8 @@ Then /^I should see as a return value an integer number representing the full ca
 end
 
 # Scenario 4
-Given /^I provide the '\-n' or '\-\-now' switch as a command line argument$/ do
-  @arguments      = [ "-n", "--now" ]
+Given /^I provide the '\-n' or '\-\-now' switch as a command line argument \(with \-vr for value and raw\)$/ do
+  @arguments      = [ "-n -vr", "--now -vr" ]
   @values       ||= []
 end
 
@@ -70,9 +70,9 @@ Then /^I should see as a return value an integer number representing the current
 end
 
 # Scenario 5
-Given /^I provide the '\-n' or '\-\-now' switch together with '\-p' or '\-\-percent' as a command line argument$/ do
+Given /^I provide the '\-n' or '\-\-now' switch together with '\-p' or '\-\-percent' as a command line argument \(with \-r for raw\)$/ do
   # we will not test the optparser functionality, we just assume it works correct in doing its parsing
-  @arguments      = [ "-n", "-p" ] 
+  @arguments      = [ "-n", "-p -r" ] 
 end
 
 When /^I execute the program with the current capacity switch in percent mode$/ do
@@ -85,12 +85,12 @@ Then /^I should see as a return value an three digit integer number or smaller r
  raise Exception, "The return values of -n and -p should be three digits or less (they are: #{@value.to_s})" unless( @value.to_s.length <= 3 )
 end
 
-When /^I provide the '\-f' switch together with '\-p'$/ do
-  @arguments      = [ "-f", "-p" ] 
+When /^I provide the '\-f' switch together with '\-p' \(and \-r for raw\)$/ do
+  @arguments      = [ "-f", "-p -r" ] 
 end
 
 When /^I execute the program with the full capacity switch in percent mode$/ do
-  @value          = `#{@command} #{@arguments.first} #{@arguments.last}`
+  @value          = `#{@command} #{@arguments.first} #{@arguments.last}`.chomp
 end
 
 Then /^I should see as a return value of "([^\"]*)"$/ do |arg1|
@@ -100,12 +100,12 @@ Then /^I should see as a return value of "([^\"]*)"$/ do |arg1|
   raise Exception, "The return values of -f and -p should be equal #{arg1.to_s} (they are: #{@value.to_s})" unless( @value.to_i == arg1.to_i )
 end
 
-When /^I provide the '\-d' switch together with '\-p'$/ do
-  @arguments      = [ "-d", "-p" ] 
+When /^I provide the '\-d' switch together with '\-p' \(and \-r for raw\)$/ do
+  @arguments      = [ "-d", "-p -r" ] 
 end
 
 When /^I execute the program with the design capacity switch in percent mode$/ do
-  @value          = `#{@command} #{@arguments.first} #{@arguments.last}`
+  @value          = `#{@command} #{@arguments.first} #{@arguments.last}`.chomp
 end
 
 Then /^I should see a return value of "([^\"]*)" or greater$/ do |arg1|
@@ -115,6 +115,19 @@ Then /^I should see a return value of "([^\"]*)" or greater$/ do |arg1|
   raise Exception, "The return values of -d and -p should be equal #{arg1.to_s} or greater (they are: #{@value.to_s})" unless( @value.to_i >= arg1.to_i )
 end
 
+
+# Scenario 6
+Given /^I provide the '\-b' and '\-f' switch as a command line argument$/ do
+  @arguments      = [ "-b", '-f' ] 
+end
+
+When /^I execute the program with the current bar graph switch$/ do
+  @value          = `#{@command} #{@arguments.first} #{@arguments.last}`.chomp
+end
+
+Then /^I should see a nice bargraph formatting like this$/ do |string|
+  raise Exception, "The return value of -b and -f should match test value (''#{string.to_s}'') of a full bar. We got ''#{@value.to_s}''." unless( string == @value )
+end
 
 
 

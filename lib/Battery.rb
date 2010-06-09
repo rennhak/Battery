@@ -21,23 +21,80 @@ class Battery # {{{
     show_now_capacity         if( @options[ :now ] )
   end # of initialize }}}
 
-  def show_design_capacity
-    value = @design
-    value = ( @design.to_f / ( @full.to_f / 100.0 ) ).to_i     if @options[ :percent ]
-    print value
-  end
+  # = The show_design_capacity function takes care of showing the design capacity state
+  # @param value
+  # @returns 
+  # @helpers formatting
+  def show_design_capacity value = @design # {{{
+    formatting( "Battery (Design)", value ).each { |line| puts line }
+  end # of def show_design_capacity }}}
 
-  def show_full_capacity
-    value = @full
-    value = ( @full.to_f / ( @full.to_f / 100.0 ) ).to_i     if @options[ :percent ]
-    print value
-  end
+  # = The show_full_capacity function takes care of showing the full capacity state
+  # @param value
+  # @returns
+  # @helpers formatting
+  def show_full_capacity value = @full # {{{
+    formatting( "Battery (Full)", value ).each { |line| puts line }
+  end # of def show_full_capacity }}}
 
-  def show_now_capacity
-    value = @now
-    value = ( @now.to_f / ( @full.to_f / 100.0 ) ).to_i     if @options[ :percent ]
-    print value
-  end
+  # = The show_now_capacity function takes care of showing the current capacity state
+  # @param value
+  # @returns
+  # @helpers formatting
+  def show_now_capacity value = @now # {{{
+    formatting( "Battery (Now)", value ).each { |line| puts line }
+  end # of def show_now_capacity }}}
+
+  # = The formatting helper function takes care of returning properly formatted strings for the show_{full,design,now}_capacity functions
+  # @param text String, text to display in the formatting
+  # @param value Integer, value which represents the battery value
+  # @returns String, with the formatted content which various show_* functions display.
+  # @helpers percentage_of, generate_bar
+  def formatting text, value # {{{
+    # == Possibilities
+    # @options[ :bar ]      ::= { true, false }
+    # @options[ :percent ]  ::= { true, false }
+
+    # Push arrays onto stack for later sprintf if options match
+    stack = Array.new
+
+    if( @options[:raw] )
+      stack << [ "%s", text                                                 ]  if( @options[ :text     ] )
+      stack << [ "%s", value                                                ]  if( @options[ :value    ] )
+      stack << [ "%s", generate_bar( percentage_of( value ) )               ]  if( @options[ :bar      ] )
+      stack << [ "%s", percentage_of( value )                               ]  if( @options[ :percent  ] )
+    else
+      stack << [ "[ %-25s ]", text                                          ]  if( @options[ :text     ] )
+      stack << [ "[ %10s ]", value                                          ]  if( @options[ :value    ] )
+      stack << [ "[ %-115s ]", generate_bar( percentage_of( value ) )       ]  if( @options[ :bar      ] )
+      stack << [ "[ %3s Percent ]", percentage_of( value )                  ]  if( @options[ :percent  ] )
+    end
+
+    format  = stack.transpose.first.join( " " )
+    values  = stack.transpose.last
+    sprintf( format, *values )
+  end # of formatting }}}
+
+
+  # = The percentage_of helper funcction gives back an percentage according to a given scale value
+  # @param input Integer value which represents e.g. a current battery charge
+  # @param scale_value Integer value which represents e.g. a full battery charge or the design capacity
+  # @returns Percentage value calculated by (input.to_f/(scale_value.to_f/100.0)) with integer precision
+  # @helps formatting
+  def percentage_of input, scale_value = @full # {{{
+    onePercent  = scale_value.to_f / 100.0
+    ( input.to_f / onePercent ).to_i
+  end # of def length }}}
+
+  # = The generate_bar helper function generates a bar "|" of a desired length
+  # @param length Integer which represents the desired length of the string to be generated
+  # @param char String which containts the character(s) used to make up the bar content, e.g. "|"
+  # @returns String with the desired length consisting of chara
+  # @helps formatting
+  def generate_bar length, char = "|" # {{{
+    char * length.to_i
+  end # of def bar }}}
+
 end # of class Battery }}}
 
 
@@ -49,26 +106,45 @@ if __FILE__ == $0
     opts.banner = "Usage: Battery.rb [options]"
 
     opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
-      options[:verbose] = v
+      options[:verbose]   = v
     end
 
     opts.on("-d", "--design", "Show numerical value of the design capacity for the battery") do |d|
-      options[:design] = d
+      options[:design]    = d
     end
 
     opts.on("-f", "--full", "Show numerical value of the full capacity for the battery") do |f|
-      options[:full] = f
+      options[:full]      = f
     end
 
     opts.on("-n", "--now", "Show numerical value of the current capacity for the battery") do |n|
-      options[:now] = n
+      options[:now]       = n
     end
 
     opts.on("-p", "--percent", "Show all values in percent") do |p|
-      options[:percent] = p
+      options[:percent]   = p
     end
+
+    opts.on("-b", "--bar", "Show a bargraph of the current battery situation") do |b|
+      options[:bar]   = b
+    end
+
+    opts.on("-t", "--text", "Show a descriptive text with the values") do |t|
+      options[:text]   = t
+    end
+
+    opts.on("-v", "--value", "Show the charge value") do |v|
+      options[:value]   = v
+    end
+
+    opts.on("-r", "--raw", "Show the value without formatting (only for capacity OR percent per time)") do |r|
+      options[:raw]   = r
+    end
+
   end.parse!
 
+  raise ArgumentError, "How would you like that formatted ? For instance minumum version would be, e.g. '-nv' or '-nvr' for raw" unless( options[:value] or options[:bar] or options[:percent] )
+  
   battery = Battery.new( options )
 
 
