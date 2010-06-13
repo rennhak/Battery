@@ -66,7 +66,7 @@ class Battery # {{{
     else
       stack << [ "[ %-25s ]", text                                          ]  if( @options[ :text     ] )
       stack << [ "[ %10s ]", value                                          ]  if( @options[ :value    ] )
-      stack << [ "[ %-115s ]", generate_bar( percentage_of( value ) )       ]  if( @options[ :bar      ] )
+      stack << [ "[ %-100s ]", generate_bar( percentage_of( value ) )       ]  if( @options[ :bar      ] )
       stack << [ "[ %3s Percent ]", percentage_of( value )                  ]  if( @options[ :percent  ] )
     end
 

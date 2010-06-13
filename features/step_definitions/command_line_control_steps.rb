@@ -76,7 +76,7 @@ Given /^I provide the '\-n' or '\-\-now' switch together with '\-p' or '\-\-perc
 end
 
 When /^I execute the program with the current capacity switch in percent mode$/ do
-  @value          = `#{@command} #{@arguments.first} #{@arguments.last}`
+  @value          = `#{@command} #{@arguments.first} #{@arguments.last}`.chomp
 end
 
 Then /^I should see as a return value an three digit integer number or smaller representing the current capacity of the battery in percentage$/ do
