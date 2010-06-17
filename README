@@ -12,7 +12,10 @@ Requirements
   o Ruby
   o GNU/Linux System
   o Laptop Battery stats available via /sys
-
+    o needs a /sys/class/power_supply/BAT0/energy_now
+    o needs a /sys/class/power_supply/BAT0/energy_full
+    o needs a /sys/class/power_supply/BAT0/energy_full_design
+    o ... or something similar
 
 % ruby lib/Battery.rb -h
 Usage: Battery.rb [options]
