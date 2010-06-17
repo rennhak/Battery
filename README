@@ -1,4 +1,4 @@
-LaptopBattery
+Battery
 -------------
 
 This small tiny program takes a battery file input from *nix systems and produces a nice visual
@@ -10,14 +10,35 @@ Requirements
 ------------
 
   o Ruby
+  o GNU/Linux System
+  o Laptop Battery stats available via /sys
 
+
+% ruby lib/Battery.rb -h
+Usage: Battery.rb [options]
+        --[no-]verbose               Run verbosely
+    -d, --design                     Show numerical value of the design capacity for the battery
+    -f, --full                       Show numerical value of the full capacity for the battery
+    -n, --now                        Show numerical value of the current capacity for the battery
+    -p, --percent                    Show all values in percent
+    -b, --bar                        Show a bargraph of the current battery situation
+    -t, --text                       Show a descriptive text with the values
+    -v, --value                      Show the charge value
+    -r, --raw                        Show the value without formatting (only for capacity OR percent per time)
+
+
+% ruby lib/Battery.rb -fnpbt
+[ Battery (Full)            ] [ |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| ] [ 100 Percent ]
+[ Battery (Now)             ] [ ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||             ] [  90 Percent ]
+
+etc.
 
 
 
 Copyright
 ---------
 
-(C) 2009, Bjoern Rennhak, under a triple license
+(C) 2010, Bjoern Rennhak, under a triple license
 
                 o MIT licence. http://www.opensource.org/licenses/mit-license.php
                 o GPLv2 license
