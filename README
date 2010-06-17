@@ -17,6 +17,10 @@ Requirements
     o needs a /sys/class/power_supply/BAT0/energy_full_design
     o ... or something similar
 
+
+Examples
+--------
+
 % ruby lib/Battery.rb -h
 Usage: Battery.rb [options]
         --[no-]verbose               Run verbosely
@@ -35,6 +39,23 @@ Usage: Battery.rb [options]
 [ Battery (Now)             ] [ ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||             ] [  90 Percent ]
 
 etc.
+
+
+Development
+-----------
+
+% rake -T 
+(in /home/br/projects/Battery)
+  rake all                 # Default Task - Run cucumber and rspec with rcov
+  rake clean               # Clean up temporary data
+  rake cucumber            # Run Cucumber features
+  rake flay                # Flay the code
+  rake flog                # Flog the code
+  rake rcov:all            # Run both specs and features to generate aggregated coverage
+  rake rcov:clobber_rspec  # Remove rcov products for rspec
+  rake rcov:cucumber       # Run Cucumber features
+  rake rcov:rspec          # Run specs using RCov
+  rake yardoc              # Generate Yardoc documentation
 
 
 
