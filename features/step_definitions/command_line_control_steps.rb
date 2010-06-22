@@ -130,6 +130,19 @@ Then /^I should see a nice bargraph formatting like this$/ do |string|
 end
 
 
+# Scenario 7
+Given /^I provide the '\-b', '\-f' and '\-c' switch as a command line argument$/ do
+   @arguments      = [ "-b", '-f -c' ]
+end
+
+When /^I execute the program with the current bar graph switch in color mode$/ do
+  @value          = `#{@command} #{@arguments.first} #{@arguments.last}`.chomp
+end
+
+Then /^I should see a nice bargraph formatting like this with colors$/ do |string|
+  new_string = string.gsub("e","\e")   # why is this weird hack necessary? What is going on inside ruby here?
+  raise Exception, "The return value of -b, -f and -c should match test value (''#{string.to_s}'') of a full green colored bar. We got ''#{@value.to_s}''." unless( new_string == @value )
+end
 
 
 

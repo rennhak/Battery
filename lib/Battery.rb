@@ -50,30 +50,47 @@ class Battery # {{{
   # @param value Integer, value which represents the battery value
   # @returns String, with the formatted content which various show_* functions display.
   # @helpers percentage_of, generate_bar
-  def formatting text, value # {{{
+  def formatting text, value, color = false # {{{
     # == Possibilities
     # @options[ :bar ]      ::= { true, false }
     # @options[ :percent ]  ::= { true, false }
 
     # Push arrays onto stack for later sprintf if options match
-    stack = Array.new
+    stack       = Array.new
+    percentage  = percentage_of( value )
 
     if( @options[:raw] )
-      stack << [ "%s", text                                                 ]  if( @options[ :text     ] )
-      stack << [ "%s", value                                                ]  if( @options[ :value    ] )
-      stack << [ "%s", generate_bar( percentage_of( value ) )               ]  if( @options[ :bar      ] )
-      stack << [ "%s", percentage_of( value )                               ]  if( @options[ :percent  ] )
+      stack << [ "%s", text                                                             ]  if( @options[ :text     ] )
+      stack << [ "%s", value                                                            ]  if( @options[ :value    ] )
+      stack << [ "%s", generate_bar( percentage )                                       ]  if( @options[ :bar      ] )
+      stack << [ "%s", percentage                                                       ]  if( @options[ :percent  ] )
     else
-      stack << [ "[ %-25s ]", text                                          ]  if( @options[ :text     ] )
-      stack << [ "[ %10s ]", value                                          ]  if( @options[ :value    ] )
-      stack << [ "[ %-100s ]", generate_bar( percentage_of( value ) )       ]  if( @options[ :bar      ] )
-      stack << [ "[ %3s Percent ]", percentage_of( value )                  ]  if( @options[ :percent  ] )
-    end
+      if( @options[:color] )
+        color_end                   = "\e[0m"
+        green, yellow, red, blink   = "\e[1;32m", "\e[1;33m", "\e[1;31m", "\e[5;31m"
+        high, medium, low           = 70, 35, 12
+
+        color = green   if( percentage >= high )
+        color = yellow  if( (percentage < high) and (percentage >= medium) )
+        color = red     if( (percentage < medium) && ( percentage >= low ) )
+        color = blink   if( percentage < low )
+
+        stack << [ "[ %-25s ]", text                                                    ]  if( @options[ :text     ] )
+        stack << [ "[ %10s ]", value                                                    ]  if( @options[ :value    ] )
+        stack << [ "[ %-100s ]", color + generate_bar( percentage ) + color_end         ]  if( @options[ :bar      ] )
+        stack << [ "[ %3s Percent ]", percentage                                        ]  if( @options[ :percent  ] )
+      else
+        stack << [ "[ %-25s ]", text                                                    ]  if( @options[ :text     ] )
+        stack << [ "[ %10s ]", value                                                    ]  if( @options[ :value    ] )
+        stack << [ "[ %-100s ]", generate_bar( percentage )                             ]  if( @options[ :bar      ] )
+        stack << [ "[ %3s Percent ]", percentage                                        ]  if( @options[ :percent  ] )
+      end # of if( @option[:color] )
+    end # of if( @options[:raw] )
 
     format  = stack.transpose.first.join( " " )
     values  = stack.transpose.last
     sprintf( format, *values )
-  end # of formatting }}}
+  end # of def formatting }}}
 
 
   # = The percentage_of helper funcction gives back an percentage according to a given scale value
@@ -141,10 +158,17 @@ if __FILE__ == $0
       options[:raw]   = r
     end
 
+    opts.on("-c", "--color", "Colorize all output") do |c|
+      options[:color]   = c
+    end
   end.parse!
 
-  raise ArgumentError, "How would you like that formatted ? For instance minumum version would be, e.g. '-nv' or '-nvr' for raw" unless( options[:value] or options[:bar] or options[:percent] )
-  
+  if( options.empty? )
+    raise ArgumentError, "Please try '-h' or '--help' to view all possible options"
+  else
+    raise ArgumentError, "How would you like that formatted ? For instance minumum version would be, e.g. '-nv' or '-nvr' for raw" unless( options[:value] or options[:bar] or options[:percent] )
+  end
+
   battery = Battery.new( options )
 
 

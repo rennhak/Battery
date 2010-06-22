@@ -50,3 +50,13 @@ Feature: Command line control
 [ |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| ]
       """
 
+  Scenario: Show a pretty formatting in bar format with '-b' or '--bar' in respect to full charge when battery is 100 Percent in color with '-c'
+    Given I am executing the program on the command line
+    And I provide the '-b', '-f' and '-c' switch as a command line argument
+    When I execute the program with the current bar graph switch in color mode
+    Then I should see a nice bargraph formatting like this with colors
+      """
+[ e[1;32m||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||e[0m ]
+      """
+
+
