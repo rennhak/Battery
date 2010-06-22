@@ -17,7 +17,7 @@ class Battery # {{{
     end
 
     if( @options[ :again ] )
-      while( sleep 5 )
+      while( sleep @options[ :again ].to_i )
         system "clear"                                        # FIXME: this is UNIX specific is there something in ruby lib?
         show_design_capacity      if( @options[ :design ] )
         show_full_capacity        if( @options[ :full ] )
@@ -97,7 +97,7 @@ class Battery # {{{
       end # of if( @option[:color] )
     end # of if( @options[:raw] )
 
-    format  = stack.transpose.first.join( " " )
+    format  = stack.transpose.first.join(" ")
     values  = stack.transpose.last
     sprintf( format, *values )
   end # of def formatting }}}
@@ -171,9 +171,9 @@ if __FILE__ == $0
     opts.on("-c", "--color", "Colorize all output") do |c|
       options[:color]   = c
     end
-  
-    opts.on("-a", "--again", "Run every X seconds same configuration again") do |a|
-      options[:again]   = a
+
+    opts.on("-a", "--again SECONDS", "Run every [SECONDS] same configuration again") do |seconds|
+      options[:again]   = seconds
     end
   end.parse!
 
