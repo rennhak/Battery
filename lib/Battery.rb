@@ -16,9 +16,20 @@ class Battery # {{{
       self.class.class_eval %{ def #{state.to_s}; @state; end }
     end
 
-    show_design_capacity      if( @options[ :design ] )
-    show_full_capacity        if( @options[ :full ] )
-    show_now_capacity         if( @options[ :now ] )
+    if( @options[ :again ] )
+      while( sleep 5 )
+        system "clear"                                        # FIXME: this is UNIX specific is there something in ruby lib?
+        show_design_capacity      if( @options[ :design ] )
+        show_full_capacity        if( @options[ :full ] )
+        show_now_capacity         if( @options[ :now ] )
+        puts "\nPress [ctrl] + [c] to exit program"           # FIXME: Do abort on specific keypress, e.g. ESC
+      end
+    else
+      show_design_capacity      if( @options[ :design ] )
+      show_full_capacity        if( @options[ :full ] )
+      show_now_capacity         if( @options[ :now ] )
+    end # of if( @options[ :again ] )
+
   end # of initialize }}}
 
   # = The show_design_capacity function takes care of showing the design capacity state
@@ -65,6 +76,9 @@ class Battery # {{{
       stack << [ "%s", generate_bar( percentage )                                       ]  if( @options[ :bar      ] )
       stack << [ "%s", percentage                                                       ]  if( @options[ :percent  ] )
     else
+      stack << [ "[ %-25s ]", text                                                      ]  if( @options[ :text     ] )
+      stack << [ "[ %10s ]", value                                                      ]  if( @options[ :value    ] )
+
       if( @options[:color] )
         color_end                   = "\e[0m"
         green, yellow, red, blink   = "\e[1;32m", "\e[1;33m", "\e[1;31m", "\e[5;31m"
@@ -75,13 +89,9 @@ class Battery # {{{
         color = red     if( (percentage < medium) && ( percentage >= low ) )
         color = blink   if( percentage < low )
 
-        stack << [ "[ %-25s ]", text                                                    ]  if( @options[ :text     ] )
-        stack << [ "[ %10s ]", value                                                    ]  if( @options[ :value    ] )
         stack << [ "[ %-100s ]", color + generate_bar( percentage ) + color_end         ]  if( @options[ :bar      ] )
-        stack << [ "[ %3s Percent ]", percentage                                        ]  if( @options[ :percent  ] )
+        stack << [ "[ %3s ]", color + percentage.to_s + " Percent" + color_end          ]  if( @options[ :percent  ] )
       else
-        stack << [ "[ %-25s ]", text                                                    ]  if( @options[ :text     ] )
-        stack << [ "[ %10s ]", value                                                    ]  if( @options[ :value    ] )
         stack << [ "[ %-100s ]", generate_bar( percentage )                             ]  if( @options[ :bar      ] )
         stack << [ "[ %3s Percent ]", percentage                                        ]  if( @options[ :percent  ] )
       end # of if( @option[:color] )
@@ -161,7 +171,12 @@ if __FILE__ == $0
     opts.on("-c", "--color", "Colorize all output") do |c|
       options[:color]   = c
     end
+  
+    opts.on("-a", "--again", "Run every X seconds same configuration again") do |a|
+      options[:again]   = a
+    end
   end.parse!
+
 
   if( options.empty? )
     raise ArgumentError, "Please try '-h' or '--help' to view all possible options"
@@ -170,6 +185,5 @@ if __FILE__ == $0
   end
 
   battery = Battery.new( options )
-
 
 end # of if __FILE__ == $0
